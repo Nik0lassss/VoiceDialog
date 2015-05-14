@@ -49,7 +49,7 @@ public class QuestionsAdapter extends BaseAdapter {
         questionTextView=(TextView)convertView.findViewById(R.id.question_item_textview_question);
         answerTextView=(TextView) convertView.findViewById(R.id.question_item_textview_answer);
         questionTextView.setText("Вопрос: "+questionList.get(position).getQuestionText());
-        answerTextView.setText("Ответ: "+Html.fromHtml(questionList.get(position).getAnswerText()));
+        answerTextView.setText(Html.fromHtml(questionList.get(position).getAnswerText()));
         return convertView;
     }
 }
