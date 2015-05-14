@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="edit_text_preference_pref_ip"
+        android:title="@string/pref_ip_setting"/>
+    <CheckBoxPreference
+        android:key="check_box_preference_voice_start_request"
+        android:title="Отаправка запроса сразу после распознания"/>
+    <CheckBoxPreference
+        android:key="check_box_preferemce_start_answer_play"
+        android:title="Воспросизведение ответа после его получения"/>
+    <CheckBoxPreference
+        android:key="save_history_preference"
+        android:title="Сохранение истории"/>
+</PreferenceScreen>
