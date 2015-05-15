@@ -38,6 +38,7 @@ import com.example.user.voicedialog.SettingsActivity;
 import com.example.user.voicedialog.adapters.QuestionsAdapter;
 import com.example.user.voicedialog.adapters.SqlDatabaseHelper;
 import com.example.user.voicedialog.errors.ErrorMessages;
+import com.example.user.voicedialog.mappers.QuestionMapper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
 
@@ -75,7 +76,7 @@ public class VoiceDialogFragment extends Fragment implements
     private ListView questionsListView;
     private QuestionsAdapter questionsAdapter;
     private SharedPreferences prefs;
-    private String URL;
+    public static String URL;
     private PreferenceChangeListener mPreferenceListener = null;
     private TextToSpeech textToSpeech;
     private Boolean startAnswerPlay;
@@ -174,7 +175,8 @@ public class VoiceDialogFragment extends Fragment implements
                 progressBar.setIndeterminate(false);
                 Question question = new Question(questionText, answerText);
                 sqlDatabaseHelper.addItem(question);
-                listQuestions.add(new Question(questionText, answerText));
+                listQuestions.add(QuestionMapper.MapStringToQuestion(response,questionText));
+                //listQuestions.add(new Question(questionText, answerText));
                 ((BaseAdapter)questionsListView.getAdapter()).notifyDataSetChanged();
 
                 if(startAnswerPlay==true)
