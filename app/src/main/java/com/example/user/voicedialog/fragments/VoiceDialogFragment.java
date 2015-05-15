@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -39,6 +40,10 @@ import com.example.user.voicedialog.adapters.SqlDatabaseHelper;
 import com.example.user.voicedialog.errors.ErrorMessages;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,6 +83,7 @@ public class VoiceDialogFragment extends Fragment implements
     private Boolean saveHistory;
     private SqlDatabaseHelper sqlDatabaseHelper;
 
+
     public VoiceDialogFragment() {
     }
 
@@ -108,6 +114,7 @@ public class VoiceDialogFragment extends Fragment implements
         questionsListView = (ListView) rootView.findViewById(R.id.acivity_main_listvie_question_history);
         android.support.v7.widget.Toolbar actionbar = (android.support.v7.widget.Toolbar)rootView.findViewById(R.id.toolbarVoiceDialogMain);
         actionbar.inflateMenu(R.menu.menu_voice_dialog);
+
         actionbar.setOnMenuItemClickListener( new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -124,6 +131,7 @@ public class VoiceDialogFragment extends Fragment implements
         questionText = "";
         answerText = "";
         URL="";
+
         listQuestions= new ArrayList<Question>();
         sqlDatabaseHelper = new SqlDatabaseHelper(getActivity());
         listQuestions.addAll(sqlDatabaseHelper.getAllQuestion());
@@ -168,6 +176,7 @@ public class VoiceDialogFragment extends Fragment implements
                 sqlDatabaseHelper.addItem(question);
                 listQuestions.add(new Question(questionText, answerText));
                 ((BaseAdapter)questionsListView.getAdapter()).notifyDataSetChanged();
+
                 if(startAnswerPlay==true)
                     textToSpeech.speak(Html.fromHtml(answerText).toString(), TextToSpeech.QUEUE_FLUSH, null);
                 editTextInputQuestion.setText("");

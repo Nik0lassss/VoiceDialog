@@ -2,11 +2,13 @@ package com.example.user.voicedialog.sender;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -27,7 +29,14 @@ public class SenderRequest {
         this.response=response;
         this.errorListener=errorListener;
     }
-
+    public SenderRequest(Context context) {
+        this.mQueque = Volley.newRequestQueue(context);
+    }
+    public void getPicture(String URL,Response.Listener<Bitmap> responseListener,Response.ErrorListener errorListener)
+    {
+        ImageRequest ir = new ImageRequest(URL, responseListener, 0, 0, null, errorListener);
+        mQueque.add(ir);
+    }
     public void sendRequest(final Map<String, String> mp, String URL) {
 
         StringRequest getUpdateOnDateRequest = new StringRequest(
