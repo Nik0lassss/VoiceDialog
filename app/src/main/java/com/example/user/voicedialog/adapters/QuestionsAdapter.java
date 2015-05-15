@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.user.voicedialog.R;
+import com.example.user.voicedialog.helper.Helper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
 
@@ -65,12 +66,8 @@ public class QuestionsAdapter extends BaseAdapter {
         pictureAnswer = (ImageView) convertView.findViewById(R.id.question_fragment_item_image_view_picture);
 
         questionTextView.setText("Вопрос: "+questionList.get(position).getQuestionText());
-        answerTextView.setText(Html.fromHtml(questionList.get(position).getAnswerText()));
-        Document doc = Jsoup.parse(questionList.get(position).getAnswerText());
-        Element image = doc.select("img").first()!=null?doc.select("img").first():null;
-        if (image!=null) {
-            String urlToImage = image.attr("src");
-            urlToImage = "http://192.168.88.80" + "/" + urlToImage;
+        answerTextView.setText(questionList.get(position).getAnswerText());
+
             this.responseListenerBitmap = new Response.Listener<Bitmap>() {
                 @Override
                 public void onResponse(Bitmap bitmap) {
@@ -83,8 +80,8 @@ public class QuestionsAdapter extends BaseAdapter {
                     answerTextView.setText(volleyError.getMessage());
                 }
             };
-            senderRequest.getPicture(urlToImage, responseListenerBitmap,errorListener);
-        }
+            senderRequest.getPicture("", responseListenerBitmap,errorListener);
+
         return convertView;
     }
 }
