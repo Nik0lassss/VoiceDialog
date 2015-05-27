@@ -2,13 +2,18 @@ package com.example.user.voicedialog.adapters;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.text.Html;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -33,6 +38,7 @@ public class QuestionsAdapter extends BaseAdapter {
     private TextView questionTextView;
     private TextView answerTextView;
     private ImageView pictureAnswer;
+    private VideoView videoWebView;
     private Response.Listener<Bitmap> responseListenerBitmap;
     private SenderRequest senderRequest;
     private Response.ErrorListener errorListener;
@@ -64,9 +70,41 @@ public class QuestionsAdapter extends BaseAdapter {
         questionTextView=(TextView)convertView.findViewById(R.id.question_item_textview_question);
         answerTextView=(TextView) convertView.findViewById(R.id.question_item_textview_answer);
         pictureAnswer = (ImageView) convertView.findViewById(R.id.question_fragment_item_image_view_picture);
+        videoWebView= (VideoView) convertView.findViewById(R.id.question_fragment_item_web_view);
+//        MediaController mediaController = new
+//                MediaController(activity);
+//        mediaController.setAnchorView(videoWebView);
+        //videoWebView.setMediaController(mediaController);
+        videoWebView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                videoWebView.start();
+                if(!videoWebView.isPlaying())
+                {
+                    videoWebView.start();
+                }
+                else
+                {
+                    videoWebView.stopPlayback();
+                }
+                return true;
+            }
+        });
+        //String path1="http://192.168.137.1/figs/kalom.mp4";
+        if(questionList.get(position).getListAnimation()!=null && questionList.get(position).getListAnimation().size()!=0)
+        {
+            Uri uri=Uri.parse("http://"+questionList.get(position).getListAnimation().get(0).getAnimation_src());
+            videoWebView.setVideoURI(uri);
+            videoWebView.setVisibility(View.VISIBLE);
+        }
+        else videoWebView.setVisibility(View.GONE);
+       // videoWebView.clearFocus();
+
+        //videoWebView.dispatchWindowFocusChanged(true);
+
 
         questionTextView.setText("Вопрос: "+questionList.get(position).getQuestionText());
-        answerTextView.setText(questionList.get(position).getAnswerText());
+        answerTextView.setText("Ответ: "+ questionList.get(position).getAnswerText());
 
             this.responseListenerBitmap = new Response.Listener<Bitmap>() {
                 @Override
@@ -80,7 +118,8 @@ public class QuestionsAdapter extends BaseAdapter {
                     answerTextView.setText(volleyError.getMessage());
                 }
             };
-            senderRequest.getPicture("", responseListenerBitmap,errorListener);
+        if(questionList.get(position).getListImages()!=null && questionList.get(position).getListImages().size()!=0)
+            senderRequest.getPicture("http://"+questionList.get(position).getListImages().get(0).getImage_src(), responseListenerBitmap,errorListener);
 
         return convertView;
     }

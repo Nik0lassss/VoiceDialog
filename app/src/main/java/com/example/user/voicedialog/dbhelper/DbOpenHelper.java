@@ -10,10 +10,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbOpenHelper extends SQLiteOpenHelper {
 
 
-    private static final String TABLE_NAME = "history";
+    private static final String TABLE_HISTORY = "history";
+    private static final String TABLE_IMAGES = "images";
     private static final String KEY_ID = "_id";
     private static final String KEY_QUESTION = "question";
     private static final String KEY_ANSWER = "answer";
+    private static final String KEY_IMAGE_SOURCE = "image_source";
+    private static final String KEY_QUESTION_ID = "question_id";
+
 
     public DbOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -22,16 +26,22 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        final String CREATE_DB = "CREATE TABLE " + TABLE_NAME + " ("
+        final String CREATE_DB_HISTORY = "CREATE TABLE " + TABLE_HISTORY + " ("
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + KEY_QUESTION + " TEXT NOT NULL,"
                 + KEY_ANSWER + " TEXT NOT NULL);";
-        db.execSQL(CREATE_DB);
+        final String CREATE_DB_IMAGES = "CREATE TABLE " + TABLE_IMAGES + " ("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + KEY_IMAGE_SOURCE + " TEXT NOT NULL,"
+                + KEY_QUESTION_ID + " INTEGER NOT NULL);";
+        db.execSQL(CREATE_DB_HISTORY);
+        db.execSQL(CREATE_DB_IMAGES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HISTORY);
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_IMAGES);
         onCreate(db);
     }
 }

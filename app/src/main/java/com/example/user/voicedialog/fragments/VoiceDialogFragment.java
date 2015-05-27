@@ -18,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -38,14 +37,13 @@ import com.example.user.voicedialog.SettingsActivity;
 import com.example.user.voicedialog.adapters.QuestionsAdapter;
 import com.example.user.voicedialog.adapters.SqlDatabaseHelper;
 import com.example.user.voicedialog.errors.ErrorMessages;
+import com.example.user.voicedialog.helper.Helper;
 import com.example.user.voicedialog.mappers.QuestionMapper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +81,7 @@ public class VoiceDialogFragment extends Fragment implements
     private Boolean startRequest;
     private Boolean saveHistory;
     private SqlDatabaseHelper sqlDatabaseHelper;
-
+    private static final int REQUEST_CODE = 1234;
 
     public VoiceDialogFragment() {
     }
@@ -115,6 +113,7 @@ public class VoiceDialogFragment extends Fragment implements
         questionsListView = (ListView) rootView.findViewById(R.id.acivity_main_listvie_question_history);
         android.support.v7.widget.Toolbar actionbar = (android.support.v7.widget.Toolbar)rootView.findViewById(R.id.toolbarVoiceDialogMain);
         actionbar.inflateMenu(R.menu.menu_voice_dialog);
+        Helper.InitialHelper(getActivity());
 
         actionbar.setOnMenuItemClickListener( new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
             @Override
@@ -135,7 +134,7 @@ public class VoiceDialogFragment extends Fragment implements
 
         listQuestions= new ArrayList<Question>();
         sqlDatabaseHelper = new SqlDatabaseHelper(getActivity());
-        listQuestions.addAll(sqlDatabaseHelper.getAllQuestion());
+        //listQuestions.addAll(sqlDatabaseHelper.getAllQuestion());
         questionsAdapter= new QuestionsAdapter(getActivity(),listQuestions);
         questionsListView.setAdapter(questionsAdapter);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -170,11 +169,16 @@ public class VoiceDialogFragment extends Fragment implements
             @Override
             public void onResponse(String response) {
                 answerText = response;
+                try {
+                    response = new String(response.getBytes("windows-1251"), Charset.forName("UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 //returnedText.setText(Html.fromHtml(answerText));
                 progressBar.setVisibility(View.GONE);
                 progressBar.setIndeterminate(false);
                 Question question = new Question(questionText, answerText);
-                sqlDatabaseHelper.addItem(question);
+               // sqlDatabaseHelper.addItem(question);
                 listQuestions.add(QuestionMapper.MapStringToQuestion(response,questionText));
                 //listQuestions.add(new Question(questionText, answerText));
                 ((BaseAdapter)questionsListView.getAdapter()).notifyDataSetChanged();
@@ -198,12 +202,13 @@ public class VoiceDialogFragment extends Fragment implements
         speech.setRecognitionListener(this);
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE,
-                "en");
+                "en-US");
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 getActivity().getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+                RecognizerIntent.ACTION_WEB_SEARCH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+
 
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -219,6 +224,7 @@ public class VoiceDialogFragment extends Fragment implements
                     progressBar.setVisibility(View.INVISIBLE);
                     speech.stopListening();
                 }
+                //startVoiceRecognitionActivity();
             }
         });
         sendQuestionButton.setOnClickListener(new View.OnClickListener() {
@@ -241,6 +247,7 @@ public class VoiceDialogFragment extends Fragment implements
                 textToSpeech.speak(Html.fromHtml(listQuestions.get(position).getAnswerText()).toString(),TextToSpeech.QUEUE_FLUSH, null);
             }
         });
+
         return  rootView;
     }
     @Override
@@ -292,6 +299,14 @@ public class VoiceDialogFragment extends Fragment implements
         Log.d(LOG_TAG, "FAILED " + errorMessage);
         returnedText.setText(errorMessage);
         toggleButton.setChecked(false);
+    }
+    private void startVoiceRecognitionActivity()
+    {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice recognition Demo...");
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override

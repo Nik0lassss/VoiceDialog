@@ -18,4 +18,10 @@
         android:id="@+id/question_fragment_item_image_view_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <VideoView
+        android:id="@+id/question_fragment_item_web_view"
+        android:layout_width="500dp"
+        android:layout_height="250dp"
+        android:visibility="gone"/>
+
 </LinearLayout>

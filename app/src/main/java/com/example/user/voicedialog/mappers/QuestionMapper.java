@@ -2,6 +2,8 @@ package com.example.user.voicedialog.mappers;
 
 import android.text.Html;
 
+import com.example.user.voicedialog.helper.Helper;
+import com.example.user.voicedialog.models.Animation;
 import com.example.user.voicedialog.models.Image;
 import com.example.user.voicedialog.models.Question;
 
@@ -16,6 +18,11 @@ import java.util.List;
  * Created by user on 15.05.2015.
  */
 public class QuestionMapper {
+    public static String getFileExtention(String filename)
+    {
+    int dotPos=filename.lastIndexOf(".")+1;
+        return filename.substring(dotPos);
+    }
     public static Question MapStringToQuestion(String response,String questionText)
     {
     Question question = new Question();
@@ -23,11 +30,24 @@ public class QuestionMapper {
         question.setQuestionText(questionText);
         Document doc = Jsoup.parse(response);
         List<Image> imagesList = new ArrayList<Image>();
+        List<Animation> animationsList = new ArrayList<Animation>();
          for(Element image : doc.select("img"))
          {
-           imagesList.add(new Image(null,image.attr("src"),null,null));
+             String imageAttr = image.attr("src");
+             String fileExtention= QuestionMapper.getFileExtention(imageAttr);
+             if (fileExtention.equals("mp4"))
+             {
+                 animationsList.add(new Animation(null,null, Helper.getURL()+"/"+imageAttr,null));
+             }
+             if(fileExtention.equals("gif"))
+             {
+                 imagesList.add(new Image(null, Helper.getURL()+"/"+imageAttr,null,null));
+             }
+
          }
+        question.setListAnimation(animationsList);
         question.setListImages(imagesList);
+
         return question;
     }
 }

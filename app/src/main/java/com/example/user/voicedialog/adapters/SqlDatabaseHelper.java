@@ -18,7 +18,8 @@ import java.util.List;
  */
 public class SqlDatabaseHelper {
     private static final String DB_NAME = "voiceDialogHistory.sqlite3";
-    private static final String TABLE_NAME = "history";
+    private static final String TABLE_NAME_HISTORY = "history";
+    private static final String TABLE_NAME_IMAGES = "images";
     private static final int DB_VESION = 1;
     // Для удобства выполнения sql-запросов
     // создадим константы с именами полей таблицы
@@ -29,7 +30,12 @@ public class SqlDatabaseHelper {
     private static final String KEY_ANSWER = "answer";
     private static final int QUESTION_COLUMN = 1;
     private static final int ANSWER_COLUMN = 2;
-    private Cursor cursor;
+    private static final String KEY_IMAGE_SOURCE = "image_source";
+    private static final String KEY_QUESTION_ID = "question_id";
+    private static final int IMAGE_SOURCE_COLUMN = 1;
+    private static final int QUESTION_ID_COLUMN = 2;
+    private Cursor cursorQuest;
+    private Cursor cursorImages;
     private SQLiteDatabase database;
     private DbOpenHelper dbOpenHelper;
     private Context context;
@@ -40,25 +46,38 @@ public class SqlDatabaseHelper {
     }
 //Методы для работы с базой данных
 
-    public Cursor getAllEntries() {
+    public Cursor getAllImagesEntries(int questionId)
+    {
+        String[] columnsToTake = { KEY_ID, KEY_IMAGE_SOURCE,KEY_QUESTION_ID };
+        // составляем запрос к базе
+        return database.query(TABLE_NAME_IMAGES, columnsToTake,
+                "question_id="+questionId, null, null, null, KEY_ID);
+    }
+    public Cursor getAllQuestionEntries() {
         //Список колонок базы, которые следует включить в результат
         String[] columnsToTake = { KEY_ID, KEY_QUESTION,KEY_ANSWER };
         // составляем запрос к базе
-        return database.query(TABLE_NAME, columnsToTake,
+        return database.query(TABLE_NAME_HISTORY, columnsToTake,
                 null, null, null, null, KEY_ID);
     }
    public List<Question> getAllQuestion()
    {
        ArrayList<Question> questions = new ArrayList<>();
        ArrayList names = new ArrayList();
-       cursor.moveToFirst();
-       if (!cursor.isAfterLast()) {
+       cursorQuest.moveToFirst();
+       if (!cursorQuest.isAfterLast()) {
            do {
-               long id = cursor.getLong(ID_COLUMN);
-               String questionText = cursor.getString(QUESTION_COLUMN);
-               String anwerText = cursor.getString(ANSWER_COLUMN);
+               int id = cursorQuest.getInt(ID_COLUMN);
+               String questionText = cursorQuest.getString(QUESTION_COLUMN);
+               String anwerText = cursorQuest.getString(ANSWER_COLUMN);
+               cursorImages= getAllImagesEntries(id);
+               cursorImages.moveToFirst();
+               if(!cursorImages.isAfterLast())
+               {
+                  String uri_image=cursorImages.getString(IMAGE_SOURCE_COLUMN);
+               } while(cursorImages.moveToNext());
                questions.add(new Question(questionText,anwerText));
-           } while (cursor.moveToNext());
+           } while (cursorQuest.moveToNext());
        }
        return  questions;
    }
@@ -66,13 +85,13 @@ public class SqlDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_QUESTION, question.getQuestionText());
         values.put(KEY_ANSWER,question.getAnswerText());
-        long id = database.insert(TABLE_NAME, null, values);
+        long id = database.insert(TABLE_NAME_HISTORY, null, values);
         refresh();
         return id;
     }
 
     public boolean removeItem(Question nameToRemove) {
-        boolean isDeleted = (database.delete(TABLE_NAME, KEY_QUESTION + "=?",
+        boolean isDeleted = (database.delete(TABLE_NAME_HISTORY, KEY_QUESTION + "=?",
                 new String[] { nameToRemove.getQuestionText() })) > 0;
         refresh();
         return isDeleted;
@@ -82,7 +101,7 @@ public class SqlDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_QUESTION, newQuestion);
         values.put(KEY_ANSWER,newAnswer);
-        boolean isUpdated = (database.update(TABLE_NAME, values, KEY_ID + "=?",
+        boolean isUpdated = (database.update(TABLE_NAME_HISTORY, values, KEY_ID + "=?",
                 new String[] {id+""})) > 0;
         return isUpdated;
     }
@@ -95,7 +114,7 @@ public class SqlDatabaseHelper {
 
     //Вызывает обновление вида
     private void refresh() {
-        cursor = getAllEntries();
+        cursorQuest = getAllQuestionEntries();
     }
 
     // Инициализация адаптера: открываем базу и создаем курсор
@@ -109,7 +128,8 @@ public class SqlDatabaseHelper {
             Log.e(this.toString(), "Error while getting database");
             throw new Error("The end");
         }
-        cursor = getAllEntries();
+        cursorQuest = getAllQuestionEntries();
+
     }
 
 

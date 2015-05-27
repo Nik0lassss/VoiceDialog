@@ -12,8 +12,8 @@ import com.example.user.voicedialog.SettingsActivity;
 public class Helper {
 
     private static String URL;
-    private SharedPreferences prefs;
-    private Context context;
+    private static SharedPreferences prefs;
+    private static Context context;
 
     public static String getURL() {
         return URL;
@@ -23,9 +23,9 @@ public class Helper {
         Helper.URL = URL;
     }
 
-    public void InitialHelper(Context context)
+    public static void InitialHelper(Context context)
     {
-        this.context=context;
+        context=context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         URL = prefs.getString(SettingsActivity.KEY_PREF_SYNC_ADDRESS, "");
     }
