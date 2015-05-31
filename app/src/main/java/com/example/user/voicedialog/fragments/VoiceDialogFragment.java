@@ -177,14 +177,15 @@ public class VoiceDialogFragment extends Fragment implements
                 //returnedText.setText(Html.fromHtml(answerText));
                 progressBar.setVisibility(View.GONE);
                 progressBar.setIndeterminate(false);
-                Question question = new Question(questionText, answerText);
+                Question question =QuestionMapper.MapStringToQuestion(response,questionText);
+               // Question question = new Question(questionText, answerText);
                // sqlDatabaseHelper.addItem(question);
-                listQuestions.add(QuestionMapper.MapStringToQuestion(response,questionText));
+                listQuestions.add(question);
                 //listQuestions.add(new Question(questionText, answerText));
                 ((BaseAdapter)questionsListView.getAdapter()).notifyDataSetChanged();
 
                 if(startAnswerPlay==true)
-                    textToSpeech.speak(Html.fromHtml(answerText).toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    textToSpeech.speak(question.getAnswerText(), TextToSpeech.QUEUE_FLUSH, null);
                 editTextInputQuestion.setText("");
             }
         };

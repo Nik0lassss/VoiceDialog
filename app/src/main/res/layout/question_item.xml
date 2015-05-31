@@ -7,21 +7,26 @@
 
     <TextView
         android:id="@+id/question_item_textview_question"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
+<LinearLayout
+    android:id="@+id/question_item_linear_layout_answer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
     <TextView
         android:id="@+id/question_item_textview_answer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <ImageView
         android:id="@+id/question_fragment_item_image_view_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
     <VideoView
         android:id="@+id/question_fragment_item_web_view"
-        android:layout_width="500dp"
+        android:layout_width="match_parent"
         android:layout_height="250dp"
         android:visibility="gone"/>
-
+</LinearLayout>
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -68,13 +69,17 @@ public class QuestionsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView=activity.getLayoutInflater().inflate(R.layout.question_item,null);
         questionTextView=(TextView)convertView.findViewById(R.id.question_item_textview_question);
+LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_item_linear_layout_answer);
+        linLayout.setBackgroundResource(R.drawable.message_layout_background_dialog_system);
         answerTextView=(TextView) convertView.findViewById(R.id.question_item_textview_answer);
+        //answerTextView.setBackgroundResource(R.drawable.message_layout_background);
+        questionTextView.setBackgroundResource(R.drawable.message_layout_background);
         pictureAnswer = (ImageView) convertView.findViewById(R.id.question_fragment_item_image_view_picture);
         videoWebView= (VideoView) convertView.findViewById(R.id.question_fragment_item_web_view);
-//        MediaController mediaController = new
-//                MediaController(activity);
-//        mediaController.setAnchorView(videoWebView);
-        //videoWebView.setMediaController(mediaController);
+        MediaController mediaController = new
+                MediaController(activity);
+        mediaController.setAnchorView(videoWebView);
+        videoWebView.setMediaController(mediaController);
         videoWebView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -119,7 +124,12 @@ public class QuestionsAdapter extends BaseAdapter {
                 }
             };
         if(questionList.get(position).getListImages()!=null && questionList.get(position).getListImages().size()!=0)
+        {
             senderRequest.getPicture("http://"+questionList.get(position).getListImages().get(0).getImage_src(), responseListenerBitmap,errorListener);
+            pictureAnswer.setVisibility(View.VISIBLE);
+        }
+        else pictureAnswer.setVisibility(View.GONE);
+
 
         return convertView;
     }

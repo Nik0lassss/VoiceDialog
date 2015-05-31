@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">VoiceDialog</string>
+    <string name="app_name">Голосовой диалог</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Настройки</string>
 
     <string name="pref_sync">pref_sync</string>
     <string name="pref_sync_summ">pref_sync_summ</string>

@@ -49,6 +49,7 @@ public class SenderRequest {
                 return params;
             }
         };
+
         getUpdateOnDateRequest.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mQueque.add(getUpdateOnDateRequest);
     }
