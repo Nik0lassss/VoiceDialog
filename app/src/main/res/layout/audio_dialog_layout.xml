@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ProgressBar
+        android:id="@+id/progressBarAudio1"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <ProgressBar
+        android:id="@+id/progressBarAudio2"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <ProgressBar
+        android:id="@+id/progressBarAudio3"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <ProgressBar
+        android:id="@+id/progressBarAudio4"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+</LinearLayout>

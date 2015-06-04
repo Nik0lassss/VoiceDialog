@@ -41,6 +41,7 @@ import com.example.user.voicedialog.helper.Helper;
 import com.example.user.voicedialog.mappers.QuestionMapper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
+import com.software.shell.fab.ActionButton;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -55,8 +56,8 @@ import java.util.prefs.PreferenceChangeListener;
  * Created by Bunis on 07.05.2015.
  */
 public class VoiceDialogFragment extends Fragment implements
-        RecognitionListener,TextToSpeech.OnInitListener{
-
+    RecognitionListener,TextToSpeech.OnInitListener{
+    private Button startListenQuestion;
     private Response.Listener<String> responseQuestion;
     private Response.ErrorListener errorListener;
     private SenderRequest sw;
@@ -82,7 +83,11 @@ public class VoiceDialogFragment extends Fragment implements
     private Boolean saveHistory;
     private SqlDatabaseHelper sqlDatabaseHelper;
     private static final int REQUEST_CODE = 1234;
-
+    private Dialog dialogListener ;
+    private ProgressBar progressBarAudio1;
+    private ProgressBar progressBarAudio2;
+    private ProgressBar progressBarAudio3;
+    private ProgressBar progressBarAudio4;
     public VoiceDialogFragment() {
     }
 
@@ -108,12 +113,45 @@ public class VoiceDialogFragment extends Fragment implements
         returnedText = (TextView) rootView.findViewById(R.id.textView1);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) rootView.findViewById(R.id.toggleButton1);
+
+        startListenQuestion = (Button) rootView.findViewById(R.id.activity_main_button_start_lisneting);
         editTextInputQuestion = (EditText) rootView.findViewById(R.id.activity_main_edittext_question);
+
         sendQuestionButton = (Button) rootView.findViewById(R.id.activity_main_button_send_question);
+        sendQuestionButton.setVisibility(View.INVISIBLE);
+        toggleButton.setVisibility(View.INVISIBLE);
+        editTextInputQuestion.setVisibility(View.INVISIBLE);
         questionsListView = (ListView) rootView.findViewById(R.id.acivity_main_listvie_question_history);
         android.support.v7.widget.Toolbar actionbar = (android.support.v7.widget.Toolbar)rootView.findViewById(R.id.toolbarVoiceDialogMain);
         actionbar.inflateMenu(R.menu.menu_voice_dialog);
         Helper.InitialHelper(getActivity());
+        dialogListener = new Dialog(getActivity());
+
+        dialogListener.setContentView(R.layout.audio_dialog_layout);
+        dialogListener.setTitle("Говорите...");
+        progressBarAudio4 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio4);
+        progressBarAudio4.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+        progressBarAudio4.setIndeterminate(false);
+        progressBarAudio4.setMax(10);
+        progressBarAudio4.setProgress(0);
+
+        progressBarAudio2 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio1);
+        progressBarAudio2.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+        progressBarAudio2.setIndeterminate(false);
+        progressBarAudio2.setMax(10);
+        progressBarAudio2.setProgress(0);
+
+        progressBarAudio3 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio2);
+        progressBarAudio3.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+        progressBarAudio3.setIndeterminate(false);
+        progressBarAudio3.setMax(10);
+        progressBarAudio3.setProgress(0);
+
+        progressBarAudio1 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio3);
+        progressBarAudio1.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+        progressBarAudio1.setIndeterminate(false);
+        progressBarAudio1.setMax(10);
+        progressBarAudio1.setProgress(0);
 
         actionbar.setOnMenuItemClickListener( new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
             @Override
@@ -228,6 +266,14 @@ public class VoiceDialogFragment extends Fragment implements
                 //startVoiceRecognitionActivity();
             }
         });
+        startListenQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speech.startListening(recognizerIntent);
+                dialogListener.show();
+                //progressBar.setIndeterminate(true);
+            }
+        });
         sendQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -330,7 +376,21 @@ public class VoiceDialogFragment extends Fragment implements
         Log.i(LOG_TAG, "onResults");
         final ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        dialogListener.dismiss();
 
+        if(startRequest==true)
+        {
+            Map<String, String> params = new HashMap<String, String>();
+            questionText = editTextInputQuestion.getText().toString();
+            questionText=matches.get(0);
+            params.put("Q",questionText);
+            params.put("D", "false");
+            params.put("S", "true");
+            params.put("server", "");
+            sw.sendRequest(params, "http://" + URL + "/analyzer.php");
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setIndeterminate(true);
+        }
         final Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.dialog_recognize_result);
 
@@ -361,7 +421,7 @@ public class VoiceDialogFragment extends Fragment implements
 
         dialog.setCancelable(true);
         dialog.setTitle("Выберите верный вариант");
-        dialog.show();
+        //dialog.show();
 
     }
 
@@ -369,6 +429,10 @@ public class VoiceDialogFragment extends Fragment implements
     public void onRmsChanged(float rmsdB) {
         Log.i(LOG_TAG, "onRmsChanged: " + rmsdB);
         progressBar.setProgress((int) rmsdB);
+        progressBarAudio1.setProgress((int) rmsdB);
+        progressBarAudio2.setProgress((int) rmsdB);
+        progressBarAudio3.setProgress((int) rmsdB);
+        progressBarAudio4.setProgress((int) rmsdB);
     }
 
 

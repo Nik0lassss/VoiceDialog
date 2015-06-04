@@ -15,4 +15,5 @@
     <color name="color_primary">#F3E5F5</color>
     <color name="color_primary_dark">#F3E5F5</color>
     <color name="color_accent">#F3E5F5</color>
+    <color name="color_white">#FFFFFF</color>
 </resources>
