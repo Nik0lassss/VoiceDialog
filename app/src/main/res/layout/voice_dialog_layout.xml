@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/color_white"
                 android:background="@drawable/chekc_speech_button2"
-                android:text="Начать прослушивание"
+                android:text="Задать вопрос"
                 android:padding="15dp"/>
             <Button
                 android:id="@+id/activity_main_button_send_question"

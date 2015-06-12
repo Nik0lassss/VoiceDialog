@@ -23,6 +23,7 @@
         android:id="@+id/question_fragment_item_image_view_picture"
         android:layout_width="match_parent"
         android:layout_height="50dp" />
+
     <VideoView
         android:id="@+id/question_fragment_item_web_view"
         android:layout_width="match_parent"

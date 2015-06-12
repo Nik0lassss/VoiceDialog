@@ -1,8 +1,10 @@
 package com.example.user.voicedialog.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,11 +16,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.example.user.voicedialog.ImageActivity;
 import com.example.user.voicedialog.R;
+import com.example.user.voicedialog.fragments.VoiceDialogFragment;
+import com.example.user.voicedialog.fragments.ZoomFragment;
 import com.example.user.voicedialog.helper.Helper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
@@ -27,6 +33,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 /**
@@ -43,6 +51,7 @@ public class QuestionsAdapter extends BaseAdapter {
     private Response.Listener<Bitmap> responseListenerBitmap;
     private SenderRequest senderRequest;
     private Response.ErrorListener errorListener;
+    private String fileName;
     public QuestionsAdapter(Activity activity,List<Question> questionList)
     {
         this.questionList=questionList;
@@ -75,6 +84,15 @@ LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_i
         //answerTextView.setBackgroundResource(R.drawable.message_layout_background);
         questionTextView.setBackgroundResource(R.drawable.message_layout_background);
         pictureAnswer = (ImageView) convertView.findViewById(R.id.question_fragment_item_image_view_picture);
+        pictureAnswer.setClickable(true);
+        pictureAnswer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, ImageActivity.class);
+                intent.putExtra("image_src",fileName);
+                activity.startActivity(intent);
+            }
+        });
         videoWebView= (VideoView) convertView.findViewById(R.id.question_fragment_item_web_view);
         MediaController mediaController = new
                 MediaController(activity);
@@ -112,9 +130,22 @@ LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_i
         answerTextView.setText("Ответ: "+ questionList.get(position).getAnswerText());
 
             this.responseListenerBitmap = new Response.Listener<Bitmap>() {
+
                 @Override
                 public void onResponse(Bitmap bitmap) {
                     pictureAnswer.setImageBitmap(bitmap);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),fileName+ ".png");
+                    try {
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } finally {
+                            if (fos != null) fos.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             };
             errorListener = new Response.ErrorListener() {
@@ -127,6 +158,7 @@ LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_i
         {
             senderRequest.getPicture("http://"+questionList.get(position).getListImages().get(0).getImage_src(), responseListenerBitmap,errorListener);
             pictureAnswer.setVisibility(View.VISIBLE);
+            fileName= "test";
         }
         else pictureAnswer.setVisibility(View.GONE);
 
