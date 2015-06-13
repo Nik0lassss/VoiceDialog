@@ -23,10 +23,17 @@ public class QuestionMapper {
     int dotPos=filename.lastIndexOf(".")+1;
         return filename.substring(dotPos);
     }
+    public static String getFileName(String filename)
+    {
+        int dotPos=filename.lastIndexOf(".");
+        int slashPos= filename.lastIndexOf("/")+1;
+        return   filename.subSequence(slashPos,dotPos).toString();
+    }
     public static Question MapStringToQuestion(String response,String questionText)
     {
     Question question = new Question();
-        question.setAnswerText(Html.fromHtml(response).toString());
+        question.setAnswerText(Html.fromHtml(response).toString().replace("￼.","").replace("/n",""));
+
         question.setQuestionText(questionText);
         Document doc = Jsoup.parse(response);
         List<Image> imagesList = new ArrayList<Image>();
@@ -35,13 +42,14 @@ public class QuestionMapper {
          {
              String imageAttr = image.attr("src");
              String fileExtention= QuestionMapper.getFileExtention(imageAttr);
+             String fileName = QuestionMapper.getFileName(imageAttr);
              if (fileExtention.equals("mp4"))
              {
                  animationsList.add(new Animation(null,null, Helper.getURL()+"/"+imageAttr,null));
              }
              if(fileExtention.equals("gif"))
              {
-                 imagesList.add(new Image(null, Helper.getURL()+"/"+imageAttr,null,null));
+                 imagesList.add(new Image(null, Helper.getURL()+"/"+imageAttr,fileName,null));
              }
 
          }

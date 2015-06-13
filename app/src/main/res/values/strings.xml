@@ -4,6 +4,7 @@
     <string name="app_name">Голосовой диалог</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Настройки</string>
+    <string name="action_image">Изображение</string>
     <string name="pref_sync">pref_sync</string>
     <string name="pref_sync_summ">pref_sync_summ</string>
     <string name="pref_syncConnectionType">pref_syncConnectionType</string>

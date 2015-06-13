@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +79,8 @@ public class QuestionsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView=activity.getLayoutInflater().inflate(R.layout.question_item,null);
         questionTextView=(TextView)convertView.findViewById(R.id.question_item_textview_question);
-LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_item_linear_layout_answer);
+        LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_item_linear_layout_answer);
+
         linLayout.setBackgroundResource(R.drawable.message_layout_background_dialog_system);
         answerTextView=(TextView) convertView.findViewById(R.id.question_item_textview_answer);
         //answerTextView.setBackgroundResource(R.drawable.message_layout_background);
@@ -127,6 +129,7 @@ LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_i
 
 
         questionTextView.setText("Вопрос: "+questionList.get(position).getQuestionText());
+
         answerTextView.setText("Ответ: "+ questionList.get(position).getAnswerText());
 
             this.responseListenerBitmap = new Response.Listener<Bitmap>() {
@@ -158,7 +161,7 @@ LinearLayout linLayout = (LinearLayout) convertView.findViewById(R.id.question_i
         {
             senderRequest.getPicture("http://"+questionList.get(position).getListImages().get(0).getImage_src(), responseListenerBitmap,errorListener);
             pictureAnswer.setVisibility(View.VISIBLE);
-            fileName= "test";
+            fileName= questionList.get(position).getListImages().get(0).getDescription();
         }
         else pictureAnswer.setVisibility(View.GONE);
 

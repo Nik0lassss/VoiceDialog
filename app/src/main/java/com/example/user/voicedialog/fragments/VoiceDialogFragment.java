@@ -3,6 +3,7 @@ package com.example.user.voicedialog.fragments;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.speech.RecognitionListener;
@@ -24,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,7 +43,7 @@ import com.example.user.voicedialog.helper.Helper;
 import com.example.user.voicedialog.mappers.QuestionMapper;
 import com.example.user.voicedialog.models.Question;
 import com.example.user.voicedialog.sender.SenderRequest;
-import com.software.shell.fab.ActionButton;
+
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -88,6 +90,9 @@ public class VoiceDialogFragment extends Fragment implements
     private ProgressBar progressBarAudio2;
     private ProgressBar progressBarAudio3;
     private ProgressBar progressBarAudio4;
+    private ImageView imageViewAudio;
+    private ImageView serverAnimation;
+    private ImageView microphoneImage;
     public VoiceDialogFragment() {
     }
 
@@ -129,30 +134,35 @@ public class VoiceDialogFragment extends Fragment implements
 
         dialogListener.setContentView(R.layout.audio_dialog_layout);
         dialogListener.setTitle("Говорите...");
-        progressBarAudio4 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio4);
-        progressBarAudio4.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
-        progressBarAudio4.setIndeterminate(false);
-        progressBarAudio4.setMax(10);
-        progressBarAudio4.setProgress(0);
-
-        progressBarAudio2 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio1);
-        progressBarAudio2.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
-        progressBarAudio2.setIndeterminate(false);
-        progressBarAudio2.setMax(10);
-        progressBarAudio2.setProgress(0);
-
-        progressBarAudio3 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio2);
-        progressBarAudio3.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
-        progressBarAudio3.setIndeterminate(false);
-        progressBarAudio3.setMax(10);
-        progressBarAudio3.setProgress(0);
-
-        progressBarAudio1 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio3);
-        progressBarAudio1.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
-        progressBarAudio1.setIndeterminate(false);
-        progressBarAudio1.setMax(10);
-        progressBarAudio1.setProgress(0);
-
+//        progressBarAudio4 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio4);
+//        progressBarAudio4.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+//        progressBarAudio4.setIndeterminate(false);
+//        progressBarAudio4.setMax(10);
+//        progressBarAudio4.setProgress(0);
+//
+//        progressBarAudio2 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio1);
+//        progressBarAudio2.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+//        progressBarAudio2.setIndeterminate(false);
+//        progressBarAudio2.setMax(10);
+//        progressBarAudio2.setProgress(0);
+//
+//        progressBarAudio3 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio2);
+//        progressBarAudio3.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+//        progressBarAudio3.setIndeterminate(false);
+//        progressBarAudio3.setMax(10);
+//        progressBarAudio3.setProgress(0);
+//
+//        progressBarAudio1 =(ProgressBar) dialogListener.findViewById(R.id.progressBarAudio3);
+//        progressBarAudio1.setProgressDrawable(getResources().getDrawable(R.drawable.verticalprogressbar2));
+//        progressBarAudio1.setIndeterminate(false);
+//        progressBarAudio1.setMax(10);
+//        progressBarAudio1.setProgress(0);
+        imageViewAudio = (ImageView) dialogListener.findViewById(R.id.imageViewAudio2);
+        serverAnimation = (ImageView)dialogListener.findViewById(R.id.imageViewAudioAnimation);
+        microphoneImage = (ImageView)dialogListener.findViewById(R.id.imageViewAudio);
+        AnimationDrawable frameAnimation = (AnimationDrawable)serverAnimation.getDrawable();
+        frameAnimation.setCallback(serverAnimation);
+        frameAnimation.setVisible(true, true);
         actionbar.setOnMenuItemClickListener( new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -225,6 +235,11 @@ public class VoiceDialogFragment extends Fragment implements
                 if(startAnswerPlay==true)
                     textToSpeech.speak(question.getAnswerText(), TextToSpeech.QUEUE_FLUSH, null);
                 editTextInputQuestion.setText("");
+                dialogListener.dismiss();
+                imageViewAudio.setVisibility(View.VISIBLE);
+                microphoneImage.setVisibility(View.VISIBLE);
+                serverAnimation.setVisibility(View.GONE);
+                dialogListener.setTitle("Говорите...");
             }
         };
         errorListener = new Response.ErrorListener() {
@@ -233,6 +248,11 @@ public class VoiceDialogFragment extends Fragment implements
                 progressBar.setVisibility(View.GONE);
                 progressBar.setIndeterminate(false);
                 returnedText.setText(volleyError.getMessage());
+                dialogListener.dismiss();
+                imageViewAudio.setVisibility(View.VISIBLE);
+                microphoneImage.setVisibility(View.VISIBLE);
+                serverAnimation.setVisibility(View.GONE);
+                dialogListener.setTitle("Говорите...");
             }
         };
         sw = new SenderRequest(getActivity(), responseQuestion, errorListener);
@@ -346,6 +366,7 @@ public class VoiceDialogFragment extends Fragment implements
         Log.d(LOG_TAG, "FAILED " + errorMessage);
         returnedText.setText(errorMessage);
         toggleButton.setChecked(false);
+        dialogListener.dismiss();
     }
     private void startVoiceRecognitionActivity()
     {
@@ -374,10 +395,12 @@ public class VoiceDialogFragment extends Fragment implements
     @Override
     public void onResults(Bundle results) {
         Log.i(LOG_TAG, "onResults");
+        dialogListener.setTitle("Запрос на сервер...");
         final ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        dialogListener.dismiss();
-
+        microphoneImage.setVisibility(View.GONE);
+        imageViewAudio.setVisibility(View.GONE);
+        serverAnimation.setVisibility(View.VISIBLE);
         if(startRequest==true)
         {
             Map<String, String> params = new HashMap<String, String>();
@@ -429,10 +452,12 @@ public class VoiceDialogFragment extends Fragment implements
     public void onRmsChanged(float rmsdB) {
         Log.i(LOG_TAG, "onRmsChanged: " + rmsdB);
         progressBar.setProgress((int) rmsdB);
-        progressBarAudio1.setProgress((int) rmsdB);
-        progressBarAudio2.setProgress((int) rmsdB);
-        progressBarAudio3.setProgress((int) rmsdB);
-        progressBarAudio4.setProgress((int) rmsdB);
+//        progressBarAudio1.setProgress((int) rmsdB);
+//        progressBarAudio2.setProgress((int) rmsdB);
+//        progressBarAudio3.setProgress((int) rmsdB);
+//        progressBarAudio4.setProgress((int) rmsdB);
+        imageViewAudio.setScaleX(rmsdB/5);
+        imageViewAudio.setScaleY(rmsdB/5);
     }
 
 

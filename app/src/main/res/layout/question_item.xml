@@ -14,6 +14,7 @@
     android:id="@+id/question_item_linear_layout_answer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="right"
     android:orientation="vertical">
     <TextView
         android:id="@+id/question_item_textview_answer"
